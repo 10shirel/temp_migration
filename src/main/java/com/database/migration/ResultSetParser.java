@@ -109,7 +109,7 @@ public class ResultSetParser {
         while (rsIssuesView.next()) { //Go over all the records
             ServiceRequest serviceRequest = new ServiceRequest();
             int relationType = 999;
-            for (int i = 1; i < rsIssuesView.getMetaData().getColumnCount(); ++i) { //Go over all the fields
+            for (int i = 1; i <= rsIssuesView.getMetaData().getColumnCount(); ++i) { //Go over all the fields
                 if (rsIssuesView.getString(i) != null && !rsIssuesView.getString(i).isEmpty()) {
                     String recordVal = rsIssuesView.getString(i).trim();
                     switch (i) {
