@@ -567,7 +567,7 @@ SWITCH TO LIKE THIS
                 continue;
             }
             //for each sorted List (that belong to same IssueId), union the comments
-            for (int i = listSize - 1; i > 0; i--) {
+            for (int i = listSize - 2; i >= 0; i--) {
                 ResultSetIssueCommentsView current = listResultSetIssueCommentsViews.get(i);
                 commentFormat = commentFormat + current.getCreatorUserName() + " (" + current.getDateCreated() + "):\n" + current.getComment() + "\n************************************************\n";
 
@@ -631,12 +631,6 @@ SWITCH TO LIKE THIS
                 issueIdToConcatenateHistory.put(entry.getKey(), historyFormat);
                 continue;
             }
-            //for each sorted List (that belong to same IssueId), union the issueHistory
-/*            for (int i = listSize - 1; i > 0; i--) {
-                ResultSetIssueHistory current = listResultSetIssueHistory.get(i);
-                historyFormat = historyFormat + "Timestamp : " + current.getDateCreated() + "\n User : " + current.getUserName() + "\n Description:\n"
-                        + "SR# " + current.getIssueId() + " " + current.getFieldChanged() + " " + formatDescriptionIssueHistory(current.getFieldChanged(), current.getNewValue()) + ".\n************************************************\n";
-            }*/
             for (int i = listSize - 2; i >= 0; i--) {
                 ResultSetIssueHistory current = listResultSetIssueHistory.get(i);
                 historyFormat = historyFormat + "Timestamp : " + current.getDateCreated() + "\n User : " + current.getUserName() + "\n Description:\n"
