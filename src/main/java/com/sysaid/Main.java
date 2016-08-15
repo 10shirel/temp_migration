@@ -12,7 +12,6 @@ import java.sql.*;
 
 import java.util.*;
 
-import static com.database.migration.ResultSetParser.populateMapSrCustIssueIdToId;
 
 
 /**
@@ -59,7 +58,7 @@ public class Main implements CommandLineRunner {
         Statement stIssueCommentsView = sourceDs.getConnection().createStatement();
         Statement stIssueHistory = sourceDs.getConnection().createStatement();
         Statement stIssueAttachment = sourceDs.getConnection().createStatement();
-        Statement stServiceReq = targetDs.getConnection().createStatement();
+
 
         //Build Queries
         String querystMaxIssueIdNumber = Queries.maxIssueIdNumber();
@@ -80,8 +79,11 @@ public class Main implements CommandLineRunner {
 
 
         //Populate table - service_req_files
- //       populateTableServiceReqFiles(0, 500, limit, targetDs, stIssueAttachment, stServiceReq);
+        populateTableServiceReqFiles(0, 500, limit, targetDs, stIssueAttachment);
 
+        //use for testing
+        //populateTablesServiceReqAndServiceReqHistory(0, 100, 100/*limit*/, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
+        //populateTablesServiceReqAndServiceReqHistoryTest(0, 500, limit, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
 
     }
 
@@ -101,7 +103,7 @@ public class Main implements CommandLineRunner {
      * @param rsRelatedIssues
      * @throws Exception
      */
-/*    public static void populateTablesServiceReqAndServiceReqHistory(int aMin, int incremental, int limit, DriverManagerDataSource targetDs, Statement stIssuesView, Statement stProjectCustomFieldValues, Statement stIssueCommentsView, Statement stIssueHistory, String queryIdOfServiceRec, ResultSet rsRelatedIssues) throws Exception {
+    public static void populateTablesServiceReqAndServiceReqHistory(int aMin, int incremental, int limit, DriverManagerDataSource targetDs, Statement stIssuesView, Statement stProjectCustomFieldValues, Statement stIssueCommentsView, Statement stIssueHistory, String queryIdOfServiceRec, ResultSet rsRelatedIssues) throws Exception {
 
         int min = aMin;
         int max = min+incremental;
@@ -141,27 +143,28 @@ public class Main implements CommandLineRunner {
             cleanLastIterationSR();
 
         }
-    }*/
+    }
 
-    public static void populateTablesServiceReqAndServiceReqHistory(int aMin, int incremental, int limit, DriverManagerDataSource targetDs, Statement stIssuesView, Statement stProjectCustomFieldValues, Statement stIssueCommentsView, Statement stIssueHistory, String queryIdOfServiceRec, ResultSet rsRelatedIssues) throws Exception {
+// use for testing
+ public static void populateTablesServiceReqAndServiceReqHistoryTest(int aMin, int incremental, int limit, DriverManagerDataSource targetDs, Statement stIssuesView, Statement stProjectCustomFieldValues, Statement stIssueCommentsView, Statement stIssueHistory, String queryIdOfServiceRec, ResultSet rsRelatedIssues) throws Exception {
 
         int min = aMin;
         int max = min+incremental;
 
 
 //          String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId>=" + min + " and IssueId<" + max);
-            String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId in (36)");
+            String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId in (82)");
             ResultSet rsIssuesView = stIssuesView.executeQuery(queryIssuesView);
 
             //String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (select IssueId from BugNet_Issues where IssueId>=" + min + " and IssueId<" + max + ")");
-            String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (36)");
+            String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (82)");
             ResultSet rsIssueCommentsView = stIssueCommentsView.executeQuery(queryIssueCommentsView);
 
             //String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId>=" + min + " and IssueId<" + max + ")");
-            String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId in (36))");
+            String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId in (82))");
             ResultSet rsProjectCustomFieldValues = stProjectCustomFieldValues.executeQuery(querysProjectCustomFieldValues);
 
-            String queryIssuehistory = Queries.buildQueryIssuehistory(" and IssueId in (select IssueId from BugNet_Issues where IssueId in (36))");
+            String queryIssuehistory = Queries.buildQueryIssuehistory(" and IssueId in (select IssueId from BugNet_Issues where IssueId in (82))");
             ResultSet rsIssuehistory = stIssueHistory.executeQuery(queryIssuehistory);
 
             //For next iteration
@@ -186,10 +189,9 @@ public class Main implements CommandLineRunner {
      *
      * @param targetDs
      * @param stIssueAttachment
-     * @param stServiceReq
      * @throws SQLException
      */
-    static void populateTableServiceReqFiles(int aMinSRF, int incremental, int limit, DriverManagerDataSource targetDs, Statement stIssueAttachment, Statement stServiceReq) throws SQLException {
+    static void populateTableServiceReqFiles(int aMinSRF, int incremental, int limit, DriverManagerDataSource targetDs, Statement stIssueAttachment) throws SQLException {
         int minSRF = aMinSRF;
         int maxSRF = minSRF + incremental;
         int iterationNumbers = ((limit-minSRF)/incremental)+1;
@@ -198,15 +200,21 @@ public class Main implements CommandLineRunner {
             System.out.println("minSRF=" + minSRF + "====");
             System.out.println("maxSRF=" + maxSRF + "====");
 
+            String queryServiceReq = Queries.buildQueryServiceRecId("where sr_cust_issueid>=" + minSRF + " and sr_cust_issueid<" + maxSRF);
+            Statement stServiceReq = targetDs.getConnection().createStatement();
+            ResultSet rsServiceReq = stServiceReq.executeQuery(queryServiceReq);
+
             String queryIssueAttachment = Queries.buildQueryIssueAttachment(("where IssueId>=" + minSRF + " and IssueId<" + maxSRF));
             ResultSet rsIssueAttachment = stIssueAttachment.executeQuery(queryIssueAttachment);
+
+
+
+            ResultSetParser.populateMapSrCustIssueIdToId(rsServiceReq);
+            ResultSetParser.parseResultSetToServiceRequestFiles(rsIssueAttachment);
 
             //For next iteration
             minSRF = maxSRF;
             maxSRF = maxSRF + incremental;
-
-            populateMapSrCustIssueIdToId(stServiceReq);
-            ResultSetParser.parseResultSetToServiceRequestFiles(rsIssueAttachment);
 
             //populate service_req_files
             Saver.updateServiceReqFilesTable(targetDs, Queries.insertServiceReqFilesSql, srRecordsFiles);
@@ -230,6 +238,7 @@ public class Main implements CommandLineRunner {
 
     private static void cleanLastIterationSRF() {
         srRecordsFiles = new ArrayList<>();
+        srCustIssueIdToIdOfServiceRec = new HashMap<>();
     }
 
 
