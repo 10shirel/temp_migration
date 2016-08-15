@@ -122,8 +122,8 @@ public class Queries {
         return query;
     }
     //todo CHANGE THE NAME
-    public static String buildQueryServiceRecId() {
-        String query = "SELECT sr_cust_issueid, id from shirel_service_req_temp";
+    public static String buildQueryServiceRecId(String concatenateQuery) {
+        String query = "SELECT sr_cust_issueid, id from shirel_service_req_temp " + concatenateQuery;
 
         return query;
     }
