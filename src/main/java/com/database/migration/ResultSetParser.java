@@ -233,7 +233,7 @@ public class ResultSetParser {
                     concatenateSecondaryId = value.append(",").append(new StringBuilder(currentRS.getSecondaryIssueId()));
                     primaryIdToConcatenateSecondaryId.put(key, concatenateSecondaryId);
                 } else {
-                    primaryIdToConcatenateSecondaryId.put(key, new StringBuilder(currentRS.getSecondaryIssueId()).append(","));
+                    primaryIdToConcatenateSecondaryId.put(key, new StringBuilder(currentRS.getSecondaryIssueId()));
                 }
             }
         }
@@ -411,11 +411,9 @@ SWITCH TO LIKE THIS
 
     }
 
-    public static void populateMapSrCustIssueIdToId(Statement stServiceReq) {
+    public static void populateMapSrCustIssueIdToId(ResultSet rsServiceReq) {
         int i = 0;
-        String queryServiceReq = Queries.buildQueryServiceRecId();
         try {
-            ResultSet rsServiceReq = stServiceReq.executeQuery(queryServiceReq);
             while (rsServiceReq.next()) {
                 srCustIssueIdToIdOfServiceRec.put(Integer.parseInt(rsServiceReq.getString(1)), Integer.parseInt(rsServiceReq.getString(2)));
                 if (i++ % 1000 == 0) {
