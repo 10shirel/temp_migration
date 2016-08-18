@@ -82,8 +82,8 @@ public class Main implements CommandLineRunner {
         populateTableServiceReqFiles(0, 500, limit, targetDs, stIssueAttachment);
 
         //use for testing
-        //populateTablesServiceReqAndServiceReqHistory(0, 100, 100/*limit*/, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
-        //populateTablesServiceReqAndServiceReqHistoryTest(0, 500, limit, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
+       // populateTablesServiceReqAndServiceReqHistory(0, 500, 1500/*limit*/, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
+       // populateTablesServiceReqAndServiceReqHistoryTest(0, 500, limit, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
 
     }
 
@@ -153,18 +153,18 @@ public class Main implements CommandLineRunner {
 
 
 //          String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId>=" + min + " and IssueId<" + max);
-            String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId in (82)");
+            String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId in (13,974)");
             ResultSet rsIssuesView = stIssuesView.executeQuery(queryIssuesView);
 
             //String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (select IssueId from BugNet_Issues where IssueId>=" + min + " and IssueId<" + max + ")");
-            String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (82)");
+            String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (13,974)");
             ResultSet rsIssueCommentsView = stIssueCommentsView.executeQuery(queryIssueCommentsView);
 
             //String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId>=" + min + " and IssueId<" + max + ")");
-            String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId in (82))");
+            String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId in (13,974))");
             ResultSet rsProjectCustomFieldValues = stProjectCustomFieldValues.executeQuery(querysProjectCustomFieldValues);
 
-            String queryIssuehistory = Queries.buildQueryIssuehistory(" and IssueId in (select IssueId from BugNet_Issues where IssueId in (82))");
+            String queryIssuehistory = Queries.buildQueryIssuehistory(" and IssueId in (select IssueId from BugNet_Issues where IssueId in (13,974))");
             ResultSet rsIssuehistory = stIssueHistory.executeQuery(queryIssuehistory);
 
             //For next iteration
@@ -228,8 +228,8 @@ public class Main implements CommandLineRunner {
     private static void cleanLastIterationSR() {
         srRecords = new ArrayList<>();
         issueIdToServReq = new HashMap<>();
-        secondaryIdToConcatenatePrimaryId = new HashMap<>();
-        primaryIdToConcatenateSecondaryId = new HashMap<>();
+        //secondaryIdToConcatenatePrimaryId = new HashMap<>();
+        //primaryIdToConcatenateSecondaryId = new HashMap<>();
         issueIdToConcatenateComment = new HashMap<>();
         issueIdToAgregateCommentViewPojo = new HashMap<>();
         issueIdToConcatenateHistory = new HashMap<>();
