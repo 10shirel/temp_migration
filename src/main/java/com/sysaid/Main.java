@@ -29,7 +29,9 @@ public class Main implements CommandLineRunner {
     static public Map<Integer, ServiceRequest> issueIdToServReq = new HashMap<>();
     static public Map<Integer, Integer> srCustIssueIdToIdOfServiceRec = new HashMap<>();
     static public Map<Integer, StringBuilder> secondaryIdToConcatenatePrimaryId = new HashMap<>();
+    static public boolean isThisFirstIterationMapSecondary = true;
     static public Map<Integer, StringBuilder> primaryIdToConcatenateSecondaryId = new HashMap<>();
+    static public boolean isThisFirstIterationMapPrimary = true;
     static public Map<Integer, String> issueIdToConcatenateComment = new HashMap<>();
     static public Map<Integer, List<ResultSetIssueCommentsView>> issueIdToAgregateCommentViewPojo = new HashMap<>();
     static public Map<Integer, String> issueIdToConcatenateHistory = new HashMap<>();
@@ -82,8 +84,8 @@ public class Main implements CommandLineRunner {
         populateTableServiceReqFiles(0, 500, limit, targetDs, stIssueAttachment);
 
         //use for testing
-       // populateTablesServiceReqAndServiceReqHistory(0, 500, 1500/*limit*/, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
-       // populateTablesServiceReqAndServiceReqHistoryTest(0, 500, limit, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
+        //populateTablesServiceReqAndServiceReqHistory(0, 250, 1000/*limit*/, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
+        //populateTablesServiceReqAndServiceReqHistoryTest(0, 500, limit, targetDs, stIssuesView, stProjectCustomFieldValues, stIssueCommentsView, stIssueHistory, queryIdOfServiceRec, rsRelatedIssues);
 
     }
 
@@ -153,18 +155,18 @@ public class Main implements CommandLineRunner {
 
 
 //          String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId>=" + min + " and IssueId<" + max);
-            String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId in (13,974)");
+            String queryIssuesView = Queries.buildQueryBugnetIssuesView("where IssueId in (21376)");
             ResultSet rsIssuesView = stIssuesView.executeQuery(queryIssuesView);
 
             //String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (select IssueId from BugNet_Issues where IssueId>=" + min + " and IssueId<" + max + ")");
-            String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (13,974)");
+            String queryIssueCommentsView = Queries.buildQueryIssueCommentsView("where IssueId in (21376)");
             ResultSet rsIssueCommentsView = stIssueCommentsView.executeQuery(queryIssueCommentsView);
 
             //String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId>=" + min + " and IssueId<" + max + ")");
-            String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId in (13,974))");
+            String querysProjectCustomFieldValues = Queries.buildQueryProjectCustomFieldValues("where IssueId in (select IssueId from BugNet_Issues where IssueId in (21376))");
             ResultSet rsProjectCustomFieldValues = stProjectCustomFieldValues.executeQuery(querysProjectCustomFieldValues);
 
-            String queryIssuehistory = Queries.buildQueryIssuehistory(" and IssueId in (select IssueId from BugNet_Issues where IssueId in (13,974))");
+            String queryIssuehistory = Queries.buildQueryIssuehistory(" and IssueId in (select IssueId from BugNet_Issues where IssueId in (21376))");
             ResultSet rsIssuehistory = stIssueHistory.executeQuery(queryIssuehistory);
 
             //For next iteration
