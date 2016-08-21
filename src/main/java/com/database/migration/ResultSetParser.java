@@ -5,13 +5,11 @@ import com.utils.DateUtils;
 import com.utils.MappingValues;
 import com.pojo.ResultSetIssueCommentsView;
 import com.pojo.ResultSetRelatedIssues;
-import com.utils.Queries;
 import org.jsoup.Jsoup;
 
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.util.*;
 
@@ -32,11 +30,18 @@ public class ResultSetParser {
         List<ResultSetRelatedIssues> listFromrsRelatedIssues = populateListFromRSRelatedIssues(rsRelatedIssues);
 
         //Populate CustParent
-        populateMapSecondaryIdToConcatenatePrimaryId(listFromrsRelatedIssues);
+        if (isThisFirstIterationMapSecondary) {
+            populateMapSecondaryIdToConcatenatePrimaryId(listFromrsRelatedIssues);
+            isThisFirstIterationMapSecondary = false;
+        }
         populateCustParent(srRecords);
 
+
         //Populate CustRelated
-        populateMapPrimaryIdToConcatenateSecondaryId(listFromrsRelatedIssues);
+        if (isThisFirstIterationMapPrimary) {
+            populateMapPrimaryIdToConcatenateSecondaryId(listFromrsRelatedIssues);
+            isThisFirstIterationMapPrimary = false;
+        }
         populateCustRelated(srRecords);
 
         //Populate Notes
@@ -79,7 +84,8 @@ public class ResultSetParser {
 
                 //Populate file_id
                 String fileName = rsIssueAttachment.getString(2);
-                currentServiceRequestFiles.setFileId(generagteFileId(fileName));
+                System.out.println("fileName = " + fileName);
+                currentServiceRequestFiles.setFileId(generateFileId(fileName));
 
                 //Populate file_Name
                 currentServiceRequestFiles.setFileName(fileName);
@@ -148,6 +154,19 @@ public class ResultSetParser {
                             serviceRequest.setDue_date(DateUtils.convertStringToDate(DateUtils.DateFormatAmPmHMS, recordVal));
                             break;
                         case 12://StatusName
+                            if (recordVal != null) {
+                                if (recordVal.equalsIgnoreCase("Closed - Not An Issue".trim())) {
+                                    serviceRequest.setStatus(3);
+                                    break;
+                                } else if (recordVal != null && recordVal.equalsIgnoreCase("Waiting on client".trim())) {
+                                    serviceRequest.setStatus(3);
+                                    break;
+                                } else if (recordVal != null && recordVal.equalsIgnoreCase("Closed - Cannot Replicate".trim())) {
+                                    serviceRequest.setStatus(3);
+                                    break;
+                                }
+
+                            }
                             serviceRequest.setStatus(MappingValues.status.get(recordVal) == null ? 0 : MappingValues.status.get(recordVal));
                             break;
                         case 13://PriorityName
@@ -264,7 +283,7 @@ public class ResultSetParser {
     }
 
 
-    private static String generagteFileId(String fileName) {
+    private static String generateFileId(String fileName) {
         File file = new File(fileName);
 
         return fileName.hashCode() + "_" + file.hashCode();
@@ -328,7 +347,7 @@ public class ResultSetParser {
                     List<ResultSetIssueCommentsView> value = new ArrayList<>();
                     Integer key = Integer.parseInt(currentRS.getIssueId());
                     if (!blackListIssuesWithInvalidComments.contains(key)) {
-                    value = issueIdToAgregateCommentViewPojo.get(key);
+                        value = issueIdToAgregateCommentViewPojo.get(key);
                         if (value != null) {
                             aggrigateList.addAll(value);
                             aggrigateList.add(currentRS);
