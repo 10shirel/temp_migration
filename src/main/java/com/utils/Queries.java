@@ -67,7 +67,7 @@ public class Queries {
                 " RI.RelationType," +
                 " RI.PrimaryIssueId," +
                 " RI.SecondaryIssueId" +
-                " from shirel_BugNet_RelatedIssues AS RI";
+                " from BugNet_RelatedIssues AS RI";
 
 
         return query;
@@ -92,8 +92,8 @@ public class Queries {
         String query = "select " +
                 "id," +
                 "sr_cust_issueid" +
-                " from shirel_service_req_temp" +
-                " where id >= (SELECT id from shirel_service_req_temp WHERE sr_cust_issueid = ? )";
+                " from service_req" +
+                " where id >= (SELECT id from service_req WHERE sr_cust_issueid = ? )";
 
 
         return query;
@@ -123,7 +123,7 @@ public class Queries {
     }
     //todo CHANGE THE NAME
     public static String buildQueryServiceRecId(String concatenateQuery) {
-        String query = "SELECT sr_cust_issueid, id from shirel_service_req_temp " + concatenateQuery;
+        String query = "SELECT sr_cust_issueid, id from service_req " + concatenateQuery;
 
         return query;
     }
@@ -135,7 +135,9 @@ public class Queries {
     }
 
 
-    /*//Todo : change the name shirel...
+
+
+   //Todo : change the name shirel...
     final public static String insertServiceReqSql =
             "insert into service_req (sr_cust_issueid, title, description, resolution, problem_type," +
                     "request_user, submit_user, responsibility, insert_time, close_time, due_date, update_time," +
@@ -152,14 +154,14 @@ public class Queries {
                     "sr_cust_partner, sr_cust_oldcompany, sr_cust_parent, sr_cust_related, source, sr_type, sr_sub_type, account_id, version, Notes, sr_cust_IssHistory, id) " +
                     "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
+
+    //TODO:change name of the table
     final public static String insertServiceReqFilesSql =
             "insert into service_req_files (id, account_id, file_id, file_name, file_date," +
                     "chat_session_id, file_content, real_file_name) " +
                     "values (?,?,?,?,?,?,?,?) ";
 
-    */
-
-    //Todo : change the name shirel...
+   /* //Todo : change the name shirel...
     final public static String insertServiceReqSql =
             "insert into shirel_service_req_temp (sr_cust_issueid, title, description, resolution, problem_type," +
                     "request_user, submit_user, responsibility, insert_time, close_time, due_date, update_time," +
@@ -181,6 +183,6 @@ public class Queries {
     final public static String insertServiceReqFilesSql =
             "insert into shirel_service_req_files (id, account_id, file_id, file_name, file_date," +
                     "chat_session_id, file_content, real_file_name) " +
-                    "values (?,?,?,?,?,?,?,?) ";
+                    "values (?,?,?,?,?,?,?,?) ";*/
 
 }
