@@ -1,14 +1,19 @@
 package com.pojo;
 
 /**
- * Created by shirel on 25/07/2016.
+ * Created by Shirel Azulay on 25/07/2016.
  */
 
-    /*  "Notes Mapping:
-    id        bugnet_issueCommentsView.issuecommentid
-    userName    bugnet_issueCommentsView.creatorusername
-    date    bugnet_issueCommentsView.datecreated
-    text     bugnet_issueCommentsView.fieldChanged"*/
+    /*
+    Notes Mapping:
+    id         bugnet_issueCommentsView.issuecommentid
+    userName   bugnet_issueCommentsView.creatorusername
+    date       bugnet_issueCommentsView.datecreated
+    text       bugnet_issueCommentsView.fieldChanged"
+
+    */
+
+
 
 
 

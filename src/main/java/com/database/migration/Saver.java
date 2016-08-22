@@ -20,7 +20,7 @@ public class Saver {
     private static Logger LOGGER = LoggerFactory.getLogger(Saver.class);
 
     /**
-     *
+     * Update Service Req Table
      * @param dsTarget
      * @param sqlInsertToServiceReqTable
      * @param records
@@ -45,7 +45,7 @@ public class Saver {
     }
 
     /**
-     *
+     * Update Service Req History Table
      * @param dsTarget
      * @param sqlInsertToServiceReqHistoryTable
      * @param queryIdOfServiceRec
@@ -56,7 +56,7 @@ public class Saver {
              Connection dbConn = DataSourceUtils.getConnection(dsTarget);
              PreparedStatement ps = dbConn.prepareStatement(queryIdOfServiceRec)) {
 
-                try {//TODO:NULLLLLLLL LINE 60
+                try {
                     ResultSet resultSet = records.iterator().next().getAllRecordThatWasInsertedToServiceReq(ps);
                     while (resultSet.next()) {
 
@@ -79,7 +79,7 @@ public class Saver {
 
 
     /**
-     *
+     * Update Service Req Files Table
      * @param dsTarget
      * @param sqlInsertToServiceReqTable
      * @param records

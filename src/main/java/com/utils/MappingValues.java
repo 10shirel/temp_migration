@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by shirel on 25/07/2016.
+ * Created by Shirel Azulay on 25/07/2016.
  */
 
 public class MappingValues {

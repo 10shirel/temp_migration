@@ -13,9 +13,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import static com.sysaid.Main.batchCounterSR;
-import static com.sysaid.Main.batchCounterSRHistory;
-
 public class ServiceRequest {
     private int id;
     private int sr_cust_issueid;
@@ -48,19 +45,24 @@ public class ServiceRequest {
     private int sr_type;
     private int sr_sub_type;
     private String account_id;
-    //TODO : what is it version
     private int version;
     private String notes;
     private String sr_cust_IssHistory;
 
 
+    /**
+     * Persist record
+     * @param ps
+     * @param isHistory
+     * @throws SQLException
+     */
     public void save(PreparedStatement ps, boolean isHistory) throws SQLException {
         try {
             ps.setInt(1, this.sr_cust_issueid);
             ps.setString(2, this.title);
-            if (this.sr_cust_issueid==20672 || this.sr_cust_issueid==20674){
+            if (this.sr_cust_issueid == 20672 || this.sr_cust_issueid == 20674) {
                 ps.setString(3, getValidString(this.description));
-            }else{
+            } else {
                 ps.setString(3, this.description);
             }
             ps.setString(4, this.resolution);
@@ -96,23 +98,6 @@ public class ServiceRequest {
                 ps.setInt(33, this.id);
             }
 
-/*            ps.addBatch();
-
-            if (!isHistory) {
-                if (batchCounterSR > 50) {
-                    int[] affectedRecordsSR = ps.executeBatch();
-                    batchCounterSR = 0;
-                }
-                batchCounterSR++;
-
-            } else {
-                if (batchCounterSRHistory > 50) {
-                    int[] affectedRecordsSRHistory = ps.executeBatch();
-                    batchCounterSRHistory = 0;
-                }
-                batchCounterSRHistory++;
-
-            }*/
             ps.executeUpdate();
 
         } catch (Exception e) {
@@ -124,7 +109,7 @@ public class ServiceRequest {
 
     public ResultSet getAllRecordThatWasInsertedToServiceReq(PreparedStatement ps) throws SQLException {
         try {
-            System.out.println("this.sr_cust_issueid = "+ this.sr_cust_issueid);
+            System.out.println("this.sr_cust_issueid = " + this.sr_cust_issueid);
             ps.setInt(1, this.sr_cust_issueid);
             return ps.executeQuery();
 
@@ -384,7 +369,7 @@ public class ServiceRequest {
     }
 
     public static String getInsertServiceReqSql() {
-        return Queries.insertServiceReqSql;
+        return Queries.INSERT_SERVICE_REQ_SQL;
     }
 
     public String getSr_cust_parent() {
@@ -412,8 +397,8 @@ public class ServiceRequest {
     }
 
 
-    public String getValidString(String invalidString){
-        return invalidString.replace("\uD83D\uDE03"," ");
+    public String getValidString(String invalidString) {
+        return invalidString.replace("\uD83D\uDE03", " ");
     }
 
 }

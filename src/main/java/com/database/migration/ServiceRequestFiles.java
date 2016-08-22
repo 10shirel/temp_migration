@@ -5,10 +5,8 @@ package com.database.migration;
  * Created by Shirel Azulay 9.8.16.
  */
 
-import com.utils.Queries;
 
 import java.sql.*;
-import static com.sysaid.Main.batchCounterSRF;
 
 public class ServiceRequestFiles {
     private int id;
@@ -17,10 +15,15 @@ public class ServiceRequestFiles {
     private String fileName;
     private String fileDate;
     private String chatSession;
-    private /*Blob*/String fileContent;
+    private String fileContent;
     private String realFileName;
 
 
+    /**
+     * Persist service request file record
+     * @param ps
+     * @throws SQLException
+     */
     public void save(PreparedStatement ps) throws SQLException {
         try {
             ps.setInt(1, this.id);
@@ -32,13 +35,6 @@ public class ServiceRequestFiles {
             ps.setString(7, this.fileContent);
             ps.setString(8, this.realFileName);
 
-           /* ps.addBatch();
-
-                if (batchCounterSRF > 50) {
-                    int[] affectedRecordsSRFiles = ps.executeBatch();
-                    batchCounterSRF = 0;
-                }
-                batchCounterSRF++;*/
             ps.executeUpdate();
 
         } catch (Exception e) {

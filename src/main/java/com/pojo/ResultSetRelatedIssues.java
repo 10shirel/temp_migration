@@ -2,10 +2,11 @@ package com.pojo;
 
 
 /**
- * Created by shirel on 25/07/2016.
+ * Created by Shirel Azulay on 25/07/2016.
  */
 
 public class ResultSetRelatedIssues {
+
     String relationType;
     String  primaryIssueId;
     String  secondaryIssueId;

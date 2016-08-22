@@ -24,10 +24,11 @@ public class ResultSetParser {
     public static void parseResultSetToServiceRequest(ResultSet rsIssuesView, ResultSet rsRelatedIssues, ResultSet rsIssueCommentsView, ResultSet rsProjectCustomFieldValues, ResultSet rsIssueHistory) throws Exception {
 
 
-        //Populate the most of the fields , those fields use only one query as reference
+        //Populate the most of the fields - regular fields (not complex) , all those fields use only one query as reference
         populateServiceReqBaseFileds(rsIssuesView);
 
         List<ResultSetRelatedIssues> listFromrsRelatedIssues = populateListFromRSRelatedIssues(rsRelatedIssues);
+
 
         //Populate CustParent
         if (isThisFirstIterationMapSecondary) {
@@ -44,15 +45,16 @@ public class ResultSetParser {
         }
         populateCustRelated(srRecords);
 
+
         //Populate Notes
-        //List<ResultSetIssueCommentsView> listFromrsIssueCommentsView = populateListFromRSIssueCommentsView(rsIssueCommentsView);
-        //populateMapIssueIdToConcatenateSortedComment(listFromrsIssueCommentsView);
         populateMapIssueIdToConcatenateSortedComment(rsIssueCommentsView);
         formatResultSetIssueCommentsView();
         populateNotes(srRecords);
 
+
         //Populate sr_cust_partner & sr_cust_oldcompany
         populateSrCustPartnerAndSrCustOldcompany(rsProjectCustomFieldValues);
+
 
         //Populate sr_cust_IssueHistory
         List<ResultSetIssueHistory> listFromRSIssueHistory = populateListFromRSIssueHistory(rsIssueHistory);
@@ -64,6 +66,9 @@ public class ResultSetParser {
     }
 
 
+    /**
+     * @param rsIssueAttachment
+     */
     public static void parseResultSetToServiceRequestFiles(ResultSet rsIssueAttachment) {
         try {
             while (rsIssueAttachment.next()) { //Go over all the records
@@ -109,6 +114,13 @@ public class ResultSetParser {
     }
 
 
+    /**
+     * Populate Service Req Base Fileds
+     *
+     * @param rsIssuesView
+     * @throws SQLException
+     * @throws ParseException
+     */
     private static void populateServiceReqBaseFileds(ResultSet rsIssuesView) throws SQLException, ParseException {
         int counter = 0;
 
@@ -147,13 +159,14 @@ public class ResultSetParser {
                             serviceRequest.setInsert_time(recordVal);
                             break;
                         case 10://LastUpdate
-                            serviceRequest.setClose_time(DateUtils.convertStringToDate(DateUtils.DateFormatAmPmHMS, recordVal));
-                            serviceRequest.setUpdate_time(DateUtils.convertStringToDate(DateUtils.DateFormatAmPmHMS, recordVal));
+                            serviceRequest.setClose_time(DateUtils.convertStringToDate(DateUtils.DATE_FORMAT_AM_PM_HMS, recordVal));
+                            serviceRequest.setUpdate_time(DateUtils.convertStringToDate(DateUtils.DATE_FORMAT_AM_PM_HMS, recordVal));
                             break;
                         case 11://IssueDueDate
-                            serviceRequest.setDue_date(DateUtils.convertStringToDate(DateUtils.DateFormatAmPmHMS, recordVal));
+                            serviceRequest.setDue_date(DateUtils.convertStringToDate(DateUtils.DATE_FORMAT_AM_PM_HMS, recordVal));
                             break;
                         case 12://StatusName
+                            //Specific cases
                             if (recordVal != null) {
                                 if (recordVal.equalsIgnoreCase("Closed - Not An Issue".trim())) {
                                     serviceRequest.setStatus(3);
@@ -195,12 +208,18 @@ public class ResultSetParser {
 
                 }
             } // Close for
+
             srRecords.add(serviceRequest);
             issueIdToServReq.put(serviceRequest.getSr_cust_issueid(), serviceRequest);
 
         } //Close While
     }
 
+    /**
+     * Populate Map SecondaryId To Concatenate PrimaryId
+     *
+     * @param rsRelatedIssuesList
+     */
     private static void populateMapSecondaryIdToConcatenatePrimaryId(List<ResultSetRelatedIssues> rsRelatedIssuesList) {
         for (ResultSetRelatedIssues currentRS : rsRelatedIssuesList) {
             StringBuilder concatenatePrimaryId;
@@ -220,6 +239,12 @@ public class ResultSetParser {
 
     }
 
+    /**
+     * Populate CustParent
+     *
+     * @param srRecords
+     * @return
+     */
     public static List<ServiceRequest> populateCustParent(List<ServiceRequest> srRecords) {
         for (ServiceRequest currentRecord : srRecords) {
             Integer key = currentRecord.getSr_cust_issueid();
@@ -234,6 +259,11 @@ public class ResultSetParser {
     }
 
 
+    /**
+     * Populate Map PrimaryId To Concatenate SecondaryId
+     *
+     * @param rsRelatedIssuesList
+     */
     private static void populateMapPrimaryIdToConcatenateSecondaryId(List<ResultSetRelatedIssues> rsRelatedIssuesList) {
         for (ResultSetRelatedIssues currentRS : rsRelatedIssuesList) {
             StringBuilder concatenateSecondaryId;
@@ -276,12 +306,18 @@ public class ResultSetParser {
     }
 
 
+    /**
+     * Generate FileId
+     *
+     * @param fileName
+     * @return
+     */
     private static String generateFileId(String fileName) {
         Random rand = new Random();
         String ranndom = Integer.toString(rand.nextInt(1000) + 1);
         File file = new File(fileName);
 
-        return (fileName+ranndom).hashCode() + "_" + file.hashCode();
+        return (fileName + ranndom).hashCode() + "_" + file.hashCode();
     }
 
 
@@ -297,34 +333,11 @@ public class ResultSetParser {
     }
 
 
-    /*    private static void populateMapIssueIdToConcatenateSortedComment(List<ResultSetIssueCommentsView> rsIssueCommentsView) {
-            int i = 0;
-            for (ResultSetIssueCommentsView currentRS : rsIssueCommentsView) {
-                List<ResultSetIssueCommentsView> aggrigateList = new ArrayList<>();
-                List<ResultSetIssueCommentsView> value = new ArrayList<>();
-                Integer key = Integer.parseInt(currentRS.getIssueId());
-                value = issueIdToAgregateCommentViewPojo.get(key);
-                if (value != null) {
-                    aggrigateList.addAll(value);
-                    aggrigateList.add(currentRS);
-                    try {
-                        issueIdToAgregateCommentViewPojo.put(key, sortedLisResultSetIssueCommentsView(aggrigateList));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    List<ResultSetIssueCommentsView> list = new ArrayList();
-                    list.add(currentRS);
-                    issueIdToAgregateCommentViewPojo.put(key, list);
-                }
-                if (i++ % 1000 == 0) {
-                    System.out.println("finished-3 " + i);
-                }
-            }
-
-
-        }*/
-
+    /**
+     * Populate Map IssueId To Concatenate Sorted Comment
+     *
+     * @param rsIssueCommentsView
+     */
     private static void populateMapIssueIdToConcatenateSortedComment(ResultSet rsIssueCommentsView) {
 
         int i = 0;
@@ -371,60 +384,14 @@ public class ResultSetParser {
         }
 
 
-/*SOURCE
-        int i = 0;
-        for (ResultSetIssueCommentsView currentRS : rsIssueCommentsView) {
-            List<ResultSetIssueCommentsView> aggrigateList = new ArrayList<>();
-            List<ResultSetIssueCommentsView> value = new ArrayList<>();
-            Integer key = Integer.parseInt(currentRS.getIssueId());
-            value = issueIdToAgregateCommentViewPojo.get(key);
-            if (value != null) {
-                aggrigateList.addAll(value);
-                aggrigateList.add(currentRS);
-                try {
-                    issueIdToAgregateCommentViewPojo.put(key, sortedLisResultSetIssueCommentsView(aggrigateList));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                List<ResultSetIssueCommentsView> list = new ArrayList();
-                list.add(currentRS);
-                issueIdToAgregateCommentViewPojo.put(key, list);
-            }
-            if (i++ % 1000 == 0) {
-                System.out.println("finished-3 " + i);
-            }
-        }*/
-
-/*
-SWITCH TO LIKE THIS
-        int i = 0;
-        try {
-            while (rsIssueCommentsView.next()) {
-                ResultSetIssueCommentsView resultSetIssueCommentsView = new ResultSetIssueCommentsView();
-                resultSetIssueCommentsView.setIssueCommentId(rsIssueCommentsView.getString(1));
-                resultSetIssueCommentsView.setIssueId(rsIssueCommentsView.getString(2));
-                resultSetIssueCommentsView.setCreatorUserName(rsIssueCommentsView.getString(3));
-                resultSetIssueCommentsView.setDateCreated(rsIssueCommentsView.getString(4));
-                resultSetIssueCommentsView.setComment(rsIssueCommentsView.getString(5) == null ? null : Jsoup.parse(rsIssueCommentsView.getString(5)).text());
-                list.add(resultSetIssueCommentsView);
-                i++;
-                if (i % 1000 == 0) {
-                    System.out.println("finished-2 " + i);
-                }
-                   */
-/* if (i == 292010) {
-                        break;
-                    }*//*
-
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-*/
-
     }
 
+
+    /**
+     * Populate Map SrCustIssueId To Id
+     *
+     * @param rsServiceReq
+     */
     public static void populateMapSrCustIssueIdToId(ResultSet rsServiceReq) {
         int i = 0;
         try {
@@ -441,6 +408,11 @@ SWITCH TO LIKE THIS
     }
 
 
+    /**
+     * Populate Map IssueId To Concatenate IssueHistory
+     *
+     * @param rsIssueCommentsView
+     */
     private static void populateMapIssueIdToConcatenateIssueHistory(List<ResultSetIssueHistory> rsIssueCommentsView) {
         for (ResultSetIssueHistory currentRS : rsIssueCommentsView) {
             List<ResultSetIssueHistory> aggrigateList = new ArrayList<>();
@@ -451,7 +423,7 @@ SWITCH TO LIKE THIS
                 aggrigateList.addAll(value);
                 aggrigateList.add(currentRS);
                 try {
-                    issueIdToAgregateIssueHistoryPojo.put(key, sortedLisResultSetIssueHistory((aggrigateList)));
+                    issueIdToAgregateIssueHistoryPojo.put(key, sortedListResultSetIssueHistory((aggrigateList)));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -466,6 +438,12 @@ SWITCH TO LIKE THIS
     }
 
 
+    /**
+     * Populate List From result set IssueHistory
+     *
+     * @param rsIssueHistory
+     * @return
+     */
     private static List<ResultSetIssueHistory> populateListFromRSIssueHistory(ResultSet rsIssueHistory) {
         List<ResultSetIssueHistory> list = new ArrayList();
         try {
@@ -485,9 +463,7 @@ SWITCH TO LIKE THIS
                 if (i++ % 1000 == 0) {
                     System.out.println("finished-1 " + i);
                 }
-             /*   if (i == 400000) {
-                    break;
-                }*/
+
             }//close While
         } catch (SQLException e) {
             e.printStackTrace();
@@ -495,6 +471,13 @@ SWITCH TO LIKE THIS
         return list;
     }
 
+
+    /**
+     * Populate Notes
+     *
+     * @param srRecords
+     * @return
+     */
     public static List<ServiceRequest> populateNotes(List<ServiceRequest> srRecords) {
         for (ServiceRequest currentRecord : srRecords) {
             Integer key = currentRecord.getSr_cust_issueid();
@@ -507,6 +490,13 @@ SWITCH TO LIKE THIS
         return srRecords;
     }
 
+
+    /**
+     * Populate SrCustIssueHistory
+     *
+     * @param srRecords
+     * @return
+     */
     public static List<ServiceRequest> populateSrCustIssueHistory(List<ServiceRequest> srRecords) {
         for (ServiceRequest currentRecord : srRecords) {
             Integer key = currentRecord.getSr_cust_issueid();
@@ -520,6 +510,12 @@ SWITCH TO LIKE THIS
     }
 
 
+    /**
+     * Populate List From result set RelatedIssues
+     *
+     * @param rsRelatedIssues
+     * @return
+     */
     private static List<ResultSetRelatedIssues> populateListFromRSRelatedIssues(ResultSet rsRelatedIssues) {
         List<ResultSetRelatedIssues> list = new ArrayList();
         try {
@@ -537,6 +533,12 @@ SWITCH TO LIKE THIS
     }
 
 
+    /**
+     * Populate List From result set IssueCommentsView
+     *
+     * @param rsIssueCommentsView
+     * @return
+     */
     private static List<ResultSetIssueCommentsView> populateListFromRSIssueCommentsView(ResultSet rsIssueCommentsView) {
         List<ResultSetIssueCommentsView> list = new ArrayList();
         try {
@@ -553,9 +555,6 @@ SWITCH TO LIKE THIS
                 if (i % 1000 == 0) {
                     System.out.println("finished-2 " + i);
                 }
-               /* if (i == 292010) {
-                    break;
-                }*/
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -564,6 +563,12 @@ SWITCH TO LIKE THIS
     }
 
 
+    /**
+     * Format Result Set IssueCommentsView
+     *
+     * @return
+     * @throws ParseException
+     */
     public static List<ResultSetIssueCommentsView> formatResultSetIssueCommentsView() throws ParseException {
 
         //go over all sorted Lists
@@ -583,12 +588,6 @@ SWITCH TO LIKE THIS
                 ResultSetIssueCommentsView current = listResultSetIssueCommentsViews.get(i);
                 commentFormat = commentFormat + current.getCreatorUserName() + " (" + current.getDateCreated() + "):\n" + current.getComment() + "\n************************************************\n";
 
-                //
-               /* if (i == (listSize - 1000)) {
-                    issueIdToConcatenateComment.put(entry.getKey(), commentFormat);
-
-                    commentFormat = null;
-                }*/
             }
             issueIdToConcatenateComment.put(entry.getKey(), commentFormat);
 
@@ -597,37 +596,13 @@ SWITCH TO LIKE THIS
         return null;
     }
 
-/*    public static List<ResultSetIssueCommentsView> formatResultSetIssueCommentsView() throws ParseException {
 
-        //go over all sorted Lists
-        for (Map.Entry<Integer, List<ResultSetIssueCommentsView>> entry : issueIdToAgregateCommentViewPojo.entrySet()) {
-            List<ResultSetIssueCommentsView> listResultSetIssueCommentsViews = entry.getValue();
-
-            int listSize = listResultSetIssueCommentsViews.size();
-            ResultSetIssueCommentsView first = listResultSetIssueCommentsViews.get(listSize - 1);
-            String commentFormat = first.getCreatorUserName() + " (" + first.getDateCreated() + "):\n" + first.getComment() + "\n************************************************\n";
-
-            if (listSize == 1) {
-                issueIdToConcatenateComment.put(entry.getKey(), commentFormat);
-                continue;
-            }
-            //for each sorted List (that belong to same IssueId), union the comments
-            for (int i = listSize - 1; i > 0; i--) {
-                ResultSetIssueCommentsView current = listResultSetIssueCommentsViews.get(i);
-                commentFormat = commentFormat + current.getCreatorUserName() + " (" + current.getDateCreated() + "):\n" + current.getComment() + "\n************************************************\n";
-            }
-            issueIdToConcatenateComment.put(entry.getKey(), commentFormat);
-
-        }
-
-        return null;
-    }*/
-/*    Timestamp: datecreated
-    User: username
-    Description:
-    SR #IssueId FieldChanged has been changed to NewValue.
-    ================================*/
-
+    /**
+     * Format Result Set IssueHistory
+     *
+     * @return
+     * @throws ParseException
+     */
     public static List<ResultSetIssueHistory> formatResultSetIssueHistory() throws ParseException {
 
         //go over all sorted Lists
@@ -655,6 +630,14 @@ SWITCH TO LIKE THIS
         return null;
     }
 
+
+    /**
+     * Format Description IssueHistory
+     *
+     * @param placeHolder
+     * @param newValue
+     * @return
+     */
     public static String formatDescriptionIssueHistory(String placeHolder, String newValue) {
         String resultFromMap = MappingValues.descritionIssueHistory.get(placeHolder);
         if (resultFromMap != null && newValue != null) {
@@ -663,6 +646,14 @@ SWITCH TO LIKE THIS
         return placeHolder;
     }
 
+
+    /**
+     * Sorted Lis Result Set IssueCommentsView
+     *
+     * @param resultSetIssueCommentsViewList
+     * @return
+     * @throws ParseException
+     */
     public static List<ResultSetIssueCommentsView> sortedLisResultSetIssueCommentsView(List resultSetIssueCommentsViewList) throws ParseException {
         Collections.sort(resultSetIssueCommentsViewList, new Comparator<ResultSetIssueCommentsView>() {
             public int compare(ResultSetIssueCommentsView v1, ResultSetIssueCommentsView v2) {
@@ -673,12 +664,21 @@ SWITCH TO LIKE THIS
         return resultSetIssueCommentsViewList;
     }
 
-    public static List<ResultSetIssueHistory> sortedLisResultSetIssueHistory(List resultSetIssueHistoryList) throws ParseException {
+
+    /**
+     * Sorted List Result Set IssueHistory
+     *
+     * @param resultSetIssueHistoryList
+     * @return
+     * @throws ParseException
+     */
+    public static List<ResultSetIssueHistory> sortedListResultSetIssueHistory(List resultSetIssueHistoryList) throws ParseException {
         Collections.sort(resultSetIssueHistoryList, new Comparator<ResultSetIssueHistory>() {
             public int compare(ResultSetIssueHistory v1, ResultSetIssueHistory v2) {
                 return v1.getDateCreated().compareTo(v2.getDateCreated());
             }
         });
+
 
         return resultSetIssueHistoryList;
     }
