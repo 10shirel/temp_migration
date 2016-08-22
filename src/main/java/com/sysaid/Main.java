@@ -132,10 +132,10 @@ public class Main implements CommandLineRunner {
             ResultSetParser.parseResultSetToServiceRequest(rsIssuesView, rsRelatedIssues, rsIssueCommentsView, rsProjectCustomFieldValues, rsIssuehistory);
 
             //populate service_req
-            Saver.updateServiceReqTable(targetDs, Queries.INSERT_SERVICE_REQ_SQL, srRecords, false);
+            SaverData.updateServiceReqTable(targetDs, Queries.INSERT_SERVICE_REQ_SQL, srRecords, false);
 
             //populate service_req_history
-            Saver.updateServiceReqHistoryTable(targetDs, Queries.INSERT_SERVICE_REQ_HISTORY_SQL, queryIdOfServiceRec, srRecords);
+            SaverData.updateServiceReqHistoryTable(targetDs, Queries.INSERT_SERVICE_REQ_HISTORY_SQL, queryIdOfServiceRec, srRecords);
 
             //Clean data of last iteration
             cleanLastIterationSR();
@@ -179,10 +179,10 @@ public class Main implements CommandLineRunner {
             ResultSetParser.parseResultSetToServiceRequest(rsIssuesView, rsRelatedIssues, rsIssueCommentsView, rsProjectCustomFieldValues, rsIssuehistory);
 
             //populate service_req
-            Saver.updateServiceReqTable(targetDs, Queries.INSERT_SERVICE_REQ_SQL, srRecords, false);
+            SaverData.updateServiceReqTable(targetDs, Queries.INSERT_SERVICE_REQ_SQL, srRecords, false);
 
             //populate service_req_history
-            Saver.updateServiceReqHistoryTable(targetDs, Queries.INSERT_SERVICE_REQ_HISTORY_SQL, queryIdOfServiceRec, srRecords);
+            SaverData.updateServiceReqHistoryTable(targetDs, Queries.INSERT_SERVICE_REQ_HISTORY_SQL, queryIdOfServiceRec, srRecords);
 
     }
 
@@ -219,7 +219,7 @@ public class Main implements CommandLineRunner {
             maxSRF = maxSRF + incremental;
 
             //populate service_req_files
-            Saver.updateServiceReqFilesTable(targetDs, Queries.INSERT_SERVICE_REQ_FILES_SQL, srRecordsFiles);
+            SaverData.updateServiceReqFilesTable(targetDs, Queries.INSERT_SERVICE_REQ_FILES_SQL, srRecordsFiles);
 
             //Clean data of last iteration
             cleanLastIterationSRF();
