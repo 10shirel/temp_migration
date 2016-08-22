@@ -198,13 +198,6 @@ public class ResultSetParser {
             srRecords.add(serviceRequest);
             issueIdToServReq.put(serviceRequest.getSr_cust_issueid(), serviceRequest);
 
-
-            //TODO : remove the 'break' blow: - meanwhile for testing
-          /*  counter++;
-            if (counter == 40000) {
-                break;
-            }*/
-
         } //Close While
     }
 
@@ -284,9 +277,11 @@ public class ResultSetParser {
 
 
     private static String generateFileId(String fileName) {
+        Random rand = new Random();
+        String ranndom = Integer.toString(rand.nextInt(1000) + 1);
         File file = new File(fileName);
 
-        return fileName.hashCode() + "_" + file.hashCode();
+        return (fileName+ranndom).hashCode() + "_" + file.hashCode();
     }
 
 
