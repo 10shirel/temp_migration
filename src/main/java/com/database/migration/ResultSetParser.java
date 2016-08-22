@@ -414,7 +414,7 @@ public class ResultSetParser {
     private static void populateMapIssueIdToConcatenateIssueHistory(List<ResultSetIssueHistory> rsIssueCommentsView) {
         for (ResultSetIssueHistory currentRS : rsIssueCommentsView) {
             List<ResultSetIssueHistory> aggrigateList = new ArrayList<>();
-            List<ResultSetIssueHistory> value = new ArrayList<>();
+            List<ResultSetIssueHistory> value;
             Integer key = currentRS.getIssueId();
             value = issueIdToAgregateIssueHistoryPojo.get(key);
             if (value != null) {
