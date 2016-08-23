@@ -60,6 +60,7 @@ public class ServiceRequest {
         try {
             ps.setInt(1, this.sr_cust_issueid);
             ps.setString(2, this.title);
+            //Those ids contain invalid chars
             if (this.sr_cust_issueid == 20672 || this.sr_cust_issueid == 20674) {
                 ps.setString(3, getValidString(this.description));
             } else {

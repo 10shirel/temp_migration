@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
 
-import static com.sysaid.Main.*;
+import static com.sysaid.Manager.*;
 
 /**
  * Created by Shirel Azulay 24.7.16
@@ -312,7 +312,7 @@ public class ResultSetParser {
      */
     private static String generateFileId(String fileName) {
         Random rand = new Random();
-        String ranndom = Integer.toString(rand.nextInt(2000) + 1);
+        String ranndom = Integer.toString((rand.nextInt(100) + 1)+ (rand.nextInt(100) + 1));
         File file = new File(fileName);
 
         return (fileName + ranndom).hashCode() + "_" + file.hashCode();

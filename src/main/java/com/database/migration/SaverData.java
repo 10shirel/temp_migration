@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.List;
 
-import static com.sysaid.Main.issueIdToServReq;
+import static com.sysaid.Manager.issueIdToServReq;
 
 
 /**
