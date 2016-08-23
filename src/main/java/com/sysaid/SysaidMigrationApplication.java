@@ -11,6 +11,6 @@ import org.springframework.context.annotation.Configuration;
 public class SysaidMigrationApplication {
 
 	public static void main(String[] args) throws Exception{
-		SpringApplication.run(Main.class, args);
+		SpringApplication.run(Manager.class, args);
 	}
 }
