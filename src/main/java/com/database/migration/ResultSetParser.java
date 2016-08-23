@@ -312,7 +312,7 @@ public class ResultSetParser {
      */
     private static String generateFileId(String fileName) {
         Random rand = new Random();
-        String ranndom = Integer.toString(rand.nextInt(1000) + 1);
+        String ranndom = Integer.toString(rand.nextInt(2000) + 1);
         File file = new File(fileName);
 
         return (fileName + ranndom).hashCode() + "_" + file.hashCode();
